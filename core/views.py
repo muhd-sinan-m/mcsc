@@ -9,12 +9,23 @@ def home(request):
     ticker_posts = list(NewsPost.objects.filter(is_published=True).order_by('-published_at')[:6])
     news_posts = NewsPost.objects.filter(is_published=True).order_by('-published_at')[:2]
     
-    # Fetch upcoming events for ticker & bento widget
-    ticker_events = list(Event.objects.filter(is_published=True).order_by('event_date')[:6])
-    upcoming_events = Event.objects.filter(
-        is_published=True, 
-        event_date__gte=timezone.now()
-    ).order_by('event_date')[:3]
+    now = timezone.now()
+    today = now.date()
+    from django.db import models as db_models
+
+    # Fetch upcoming events for ticker & bento widget (including multi-day events until last date)
+    upcoming_events_qs = (
+        Event.objects.filter(is_published=True)
+        .filter(
+            db_models.Q(event_date__gte=now) |
+            db_models.Q(additional_dates__date__gte=today)
+        )
+        .distinct()
+        .order_by('event_date')
+        .prefetch_related('additional_dates')
+    )
+    ticker_events = list(upcoming_events_qs[:6])
+    upcoming_events = list(upcoming_events_qs[:3])
     
     # Build ticker slides containing 1 News item and 1 Event item
     ticker_slides = []
