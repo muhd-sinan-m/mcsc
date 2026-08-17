@@ -31,11 +31,25 @@ def home(request):
     # Fetch current council info
     council_info = CouncilInfo.objects.order_by('-academic_year').first()
 
+    # Onam Championship summary for home banner
+    try:
+        from onam.models import Department, OnamSettings
+        onam_leader = Department.objects.filter(points__gt=0).order_by('-points', 'name').first()
+        onam_total_departments = Department.objects.filter(points__gt=0).count()
+        onam_settings = OnamSettings.get_settings()
+    except Exception:
+        onam_leader = None
+        onam_total_departments = 0
+        onam_settings = None
+
     context = {
         'news_posts': news_posts,
         'ticker_slides': ticker_slides,
         'upcoming_events': upcoming_events,
         'council_info': council_info,
+        'onam_leader': onam_leader,
+        'onam_total_departments': onam_total_departments,
+        'onam_settings': onam_settings,
     }
     return render(request, 'core/home.html', context)
 

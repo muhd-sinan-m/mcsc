@@ -33,9 +33,29 @@ def events_list(request):
         .prefetch_related('additional_dates')
     )
 
+    # Onam Championship data
+    try:
+        from onam.models import Department, OnamGame, GameResult, OnamSettings
+        onam_games = OnamGame.objects.prefetch_related(
+            models.Prefetch(
+                'results',
+                queryset=GameResult.objects.select_related('department').order_by('position')
+            )
+        ).order_by('order', 'name')
+        departments_ranked = Department.objects.filter(points__gt=0).order_by('-points', 'name')
+        onam_settings = OnamSettings.get_settings()
+    except Exception:
+        onam_games = []
+        departments_ranked = []
+        onam_settings = None
+
+
     context = {
         'upcoming_events': upcoming_events,
         'past_events': past_events,
+        'onam_games': onam_games,
+        'departments_ranked': departments_ranked,
+        'onam_settings': onam_settings,
     }
     return render(request, 'events/events_list.html', context)
 

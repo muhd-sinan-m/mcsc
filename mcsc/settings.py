@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'news',
     'events',
     'grievances',
+    'onam',
 ]
 
 MIDDLEWARE = [
