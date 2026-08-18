@@ -53,7 +53,7 @@ class OnamGame(models.Model):
     image = models.ImageField(
         upload_to='onam_games/',
         null=True, blank=True,
-        help_text="Background image shown on the game card (uploaded to Supabase).",
+        help_text="Background image shown on the game card (uploaded to VPS storage).",
     )
     scheduled_date = models.DateField(
         null=True, blank=True,
@@ -118,7 +118,7 @@ class OnamGame(models.Model):
     def has_any_results(self):
         return self.results.exists()
 
-    # Static image fallback mapping (used when no Supabase image is uploaded)
+    # Static image fallback mapping (used when no custom image is uploaded)
     _STATIC_BG_MAP = {
         'obstacle race':        'images/onam 26/obstacle_race.webp',
         'ishtika pidutham':     'images/onam 26/brick.webp',

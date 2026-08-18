@@ -163,9 +163,6 @@ def download_attachment(request, pk):
     if not grievance.attachment:
         raise Http404("No attachment associated with this ticket.")
         
-    if getattr(settings, 'USE_SUPABASE_STORAGE', False):
-        return redirect(grievance.attachment.url)
-
     try:
         file_path = grievance.attachment.path
         if os.path.exists(file_path):
@@ -177,3 +174,4 @@ def download_attachment(request, pk):
     except Exception as e:
         print(f"Error serving local attachment for grievance {pk}: {e}")
         raise Http404("Attachment file could not be read.")
+
